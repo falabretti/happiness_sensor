@@ -5,8 +5,8 @@ import cv2 as cv
 import signal
 
 from libs.video import VideoInput
-from libs.data import State
-from libs.threads import inference_handler
+from libs.data import State, Stats
+from libs.threads import inference_handler, io_handler
 from libs.inference import Inference
 
 app = Flask(__name__)
@@ -41,9 +41,15 @@ if __name__ == '__main__':
     state = State()
     video = VideoInput()
     inference = Inference()
+    stats = Stats()
 
-    inference_thread = Thread(target=inference_handler, args=[state, video, inference])
+    inference_thread = Thread(target=inference_handler, args=[state, video, inference, stats])
+    io_thread = Thread(target=io_handler, args=[state, stats])
 
     inference_thread.start()
+    io_thread.start()
+
     app.run(host='0.0.0.0', threaded=True, debug=False)
+
     inference_thread.join()
+    io_thread.join()

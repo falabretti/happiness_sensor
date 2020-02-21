@@ -8,7 +8,7 @@ class VideoInput:
         self._video = cv.VideoCapture(self._input_stream)
         _, self.frame = self._video.read()
 
-    def get_frame(self, inference):
+    def get_frame(self, inference, stats):
         has_frame, next_frame = self._video.read()
         if not has_frame:
             return self.frame
@@ -24,5 +24,7 @@ class VideoInput:
 
         aux_frame = self.frame.copy()
         self.frame = next_frame
+        
+        stats.update(boxes, emotions)
 
         return aux_frame
