@@ -4,13 +4,15 @@ from openvino.inference_engine import IENetwork, IEPlugin
 
 from .helpers import prepare_frame
 
+
 class Inference:
     def __init__(self):
+        cpu_extension = cpu_extension = r"C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\inference_engine\bin\intel64\Release\cpu_extension_avx2.dll"
         self.plugin = IEPlugin(device='CPU')
         self.face_detection = FaceDetection(r'extension\models\face-detection-retail-0005\FP16\face-detection-retail-0005.xml',
-                                            self.plugin,
-                                            device='CPU',
-                                            cpu_extension=r"C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\inference_engine\bin\intel64\Release\cpu_extension_avx2.dll")
+                                            self.plugin, cpu_extension=cpu_extension)
+        self.emotion_recognition = EmotionRecognition(r'extension\models\emotions-recognition-retail-0003\FP16\emotions-recognition-retail-0003.xml',
+                                                      self.plugin, cpu_extension=cpu_extension)
 
 
 class Network:
@@ -55,7 +57,6 @@ class Network:
 class FaceDetection(Network):
     def __init__(self, model, plugin, device='CPU', cpu_extension=None):
         super().__init__(model, plugin, device, cpu_extension, num_requests=3)
-        self.AUX_REQ_ID = 2
         self.is_first_frame = True
 
     def infer(self, next_frame):
@@ -69,7 +70,6 @@ class FaceDetection(Network):
             return []
 
         faces = self.get_results(self.cur_req_id)
-        # frame = draw_boxes(next_frame, faces)
 
         return faces
 
@@ -80,7 +80,45 @@ class FaceDetection(Network):
             results = self.exec_net.requests[request_id].outputs[self.output_layer]
             faces = [x for x in results[0][0] if x[2] > 0.8]
 
-        if request_id != 2:
-            self._swap_requests()
-
+        self._swap_requests()
         return faces
+
+
+class EmotionRecognition(Network):
+
+    def __init__(self, model, plugin, device='CPU', cpu_extension=None):
+        super().__init__(model, plugin, device, cpu_extension)
+
+    def infer(self, faces):
+        results = []
+
+        for idx in range(len(faces) + 1):
+            if idx == len(faces):
+                result = self._get_results(self.cur_req_id)
+                results.append(result)
+                break
+
+            face_frame = faces[idx]
+            try:
+                input_face = prepare_frame(face_frame, self.get_input_shape())
+            except cv.error:
+                if len(faces) == 1:
+                    return []
+                continue
+
+            self._infer_req(input_face, self.next_req_id)
+
+            if idx == 0:
+                self._swap_requests()
+                continue
+
+            result = self._get_results(self.cur_req_id)
+            results.append(result)
+
+        return results
+
+    def _get_results(self, request_id):
+        if self._wait(request_id) == 0:
+            result = self.exec_net.requests[request_id].outputs[self.output_layer]
+            self._swap_requests()
+            return result

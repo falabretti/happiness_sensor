@@ -1,6 +1,6 @@
 import cv2 as cv
 
-from .helpers import draw_boxes
+from .helpers import draw_boxes, get_face_frames, get_boxes
 
 class VideoInput:
     def __init__(self):
@@ -14,7 +14,13 @@ class VideoInput:
             return self.frame
 
         faces = inference.face_detection.infer(next_frame)
-        self.frame = draw_boxes(next_frame, faces)
+        boxes = get_boxes(next_frame, faces)
+        face_frames = get_face_frames(boxes, next_frame)
+        emotions = inference.emotion_recognition.infer(face_frames)
+
+        if (len(faces) > 0):
+            self.frame = draw_boxes(next_frame, boxes, emotions)
+
 
         aux_frame = self.frame.copy()
         self.frame = next_frame

@@ -12,13 +12,35 @@ def prepare_frame(frame, input_shape):
     return input_frame
 
 
-def draw_boxes(frame, faces, color=(0, 255, 0)):
+def draw_boxes(frame, boxes, emotions):
     h, w = frame.shape[:2]
+    emotion_list = ['neutral', 'happy', 'sad', 'surprise', 'anger']
 
-    for face in faces:
-        box = face[3:7] * np.array([w, h, w, h])
-        xmin, ymin, xmax, ymax = box.astype("int")
-
-        cv.rectangle(frame, (xmin, ymin), (xmax, ymax), color, thickness=1)
+    for box, emotion in zip(boxes, emotions):
+        color = (0, 255, 0) if emotion.argmax() == 1 else (0, 0, 255)
+        xmin, ymin, xmax, ymax = box
+        cv.rectangle(frame, (xmin, ymin), (xmax, ymax), color, thickness=2)
 
     return frame
+
+def get_boxes(frame, detections):
+    h, w = frame.shape[:2]
+    boxes = []
+
+    for detection in detections:
+        box = detection[3:7] * np.array([w, h, w, h])
+        xmin, ymin, xmax, ymax = box.astype('int')
+        boxes.append((xmin, ymin, xmax, ymax))
+
+    return boxes
+
+def get_face_frames(boxes, frame):
+    h, w = frame.shape[:2]
+    face_frames = []
+
+    for box in boxes: 
+        xmin, ymin, xmax, ymax = box
+        face_frame = frame[ymin:ymax, xmin:xmax]
+        face_frames.append(face_frame)
+
+    return face_frames
