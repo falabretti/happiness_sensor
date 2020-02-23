@@ -2,10 +2,15 @@ import cv2 as cv
 
 from .helpers import draw_boxes, get_face_frames, get_boxes
 
+
 class VideoInput:
     def __init__(self):
-        self._input_stream = 0
+        self._input_stream = 0 # './faces.mp4'
         self._video = cv.VideoCapture(self._input_stream)
+
+        self._video.set(cv.CAP_PROP_FRAME_WIDTH, 3000)
+        self._video.set(cv.CAP_PROP_FRAME_HEIGHT, 3000)
+
         _, self.frame = self._video.read()
 
     def get_frame(self, inference, stats):

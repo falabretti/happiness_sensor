@@ -1,5 +1,7 @@
 from flask import Flask, Response
+from flask_socketio import SocketIO
 from threading import Thread
+from flask_cors import CORS
 
 import cv2 as cv
 import signal
@@ -10,6 +12,8 @@ from libs.threads import inference_handler, io_handler
 from libs.inference import Inference
 
 app = Flask(__name__)
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.route('/')
@@ -31,9 +35,11 @@ def stream():
                    b'Content-Type: text/plain\r\n\r\n'+string_data+b'\r\n')
             state.new_frame = False
 
+
 def stop_run(signum, frame):
     state.run = False
     raise KeyboardInterrupt
+
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, stop_run)
@@ -43,13 +49,14 @@ if __name__ == '__main__':
     inference = Inference()
     stats = Stats()
 
-    inference_thread = Thread(target=inference_handler, args=[state, video, inference, stats])
-    io_thread = Thread(target=io_handler, args=[state, stats])
+    inference_thread = Thread(target=inference_handler, args=[
+                              state, video, inference, stats])
+    io_thread = Thread(target=io_handler, args=[state, stats, socketio])
 
     inference_thread.start()
     io_thread.start()
 
-    app.run(host='0.0.0.0', threaded=True, debug=False)
+    socketio.run(app, host='0.0.0.0', debug=False)
 
     inference_thread.join()
     io_thread.join()
