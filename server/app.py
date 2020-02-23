@@ -10,6 +10,16 @@ from libs.video import VideoInput
 from libs.data import State, Stats
 from libs.threads import inference_handler, io_handler
 from libs.inference import Inference
+from libs.helpers import get_log_filename
+
+import logging
+
+logging.basicConfig(level=logging.INFO, filename=get_log_filename(),
+                    format='%(levelname)s - %(asctime)s - %(name)s:%(lineno)d - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
+
+logging.getLogger('engineio.server').setLevel(logging.ERROR)
+logging.getLogger('socketio.server').setLevel(logging.ERROR)
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 app = Flask(__name__)
 CORS(app)

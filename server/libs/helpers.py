@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import datetime
 
 
 def prepare_frame(frame, input_shape):
@@ -23,6 +24,7 @@ def draw_boxes(frame, boxes, emotions):
 
     return frame
 
+
 def get_boxes(frame, detections):
     h, w = frame.shape[:2]
     boxes = []
@@ -34,13 +36,18 @@ def get_boxes(frame, detections):
 
     return boxes
 
+
 def get_face_frames(boxes, frame):
     h, w = frame.shape[:2]
     face_frames = []
 
-    for box in boxes: 
+    for box in boxes:
         xmin, ymin, xmax, ymax = box
         face_frame = frame[ymin:ymax, xmin:xmax]
         face_frames.append(face_frame)
 
     return face_frames
+
+
+def get_log_filename():
+    return f'log/{str(datetime.date.today())}.log'
