@@ -1,3 +1,8 @@
 body {
-    transition: background-color 1000ms ease;
+    transition: background-color 2.5s ease;
+}
+svg > path {
+    color: #FFE017;
+    stroke: black;
+    stroke-width: 5;
 }

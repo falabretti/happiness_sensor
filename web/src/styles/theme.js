@@ -7,8 +7,10 @@ export const useStyles = makeStyles(theme => ({
         alignItems: 'center'
     },
     header: {
-        width: '300px',
-        textAlign: 'center'
+        width: '350px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     card: {
         padding: theme.spacing(2),
@@ -20,18 +22,26 @@ export const useStyles = makeStyles(theme => ({
         height: 'auto',
     },
     streamContainer: {
-        display: 'flex'
+        display: 'flex',
+        flexDirection: 'column',
     },
     status: {
         display: 'flex',
         alignItems: 'center',
-        width: '60%',
-        justifyContent: 'space-between'
+        padding: theme.spacing(3)
     },
     statusIcon: {
-        fontSize: '70px'
+        fontSize: '100px',
+        marginRight: theme.spacing(3),
+    },
+    headerIcon: {
+        fontSize: '70px',
+        marginRight: theme.spacing(3),
     },
     slider: {
-        width: '75%'
+        width: '100%'
+    },
+    valueText: {
+        marginRight: theme.spacing(3)
     }
 }));
