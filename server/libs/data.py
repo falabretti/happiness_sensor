@@ -1,8 +1,42 @@
+import os
+from configparser import ConfigParser
+from shutil import copyfile
+
+
 class State:
     def __init__(self):
         self.run = True
         self.current_frame = None
         self.new_frame = False
+
+
+class Settings:
+    def __init__(self):
+        self.config = ConfigParser()
+        if not os.path.isfile('./config.ini'):
+            copyfile('./config.ini.default', './config.ini')
+
+        self.config.read('./config.ini')
+        self._get_config()
+
+    def _get_config(self):
+        input_stream = self.config.get('main', 'input_stream')
+        self.input_stream = int(
+            input_stream) if input_stream.isnumeric() else input_stream
+
+        self.cpu_extension = self.config.get('main', 'cpu_extension')
+        self.face_detection_xml = self.config.get('main', 'face_detection_xml')
+        self.emotion_recognition_xml = self.config.get(
+            'main', 'emotion_recognition_xml')
+        self.device = self.config.get('main', 'device')
+
+        flip_code = self.config.get('main', 'flip_code')
+        self.flip_code = None if flip_code == 'None' else int(flip_code)
+
+        resolution = self.config.get('main', 'resolution')
+        w, h = resolution.replace(' ', '').split('x')
+        self.frame_width = int(w)
+        self.frame_height = int(h)
 
 
 class Stats:

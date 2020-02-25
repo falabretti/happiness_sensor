@@ -7,7 +7,7 @@ import cv2 as cv
 import signal
 
 from libs.video import VideoInput
-from libs.data import State, Stats
+from libs.data import State, Stats, Settings
 from libs.threads import inference_handler, io_handler
 from libs.inference import Inference
 from libs.helpers import get_log_filename
@@ -55,8 +55,9 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, stop_run)
 
     state = State()
-    video = VideoInput()
-    inference = Inference()
+    settings = Settings()
+    video = VideoInput(settings)
+    inference = Inference(settings)
     stats = Stats()
 
     inference_thread = Thread(target=inference_handler, args=[

@@ -6,13 +6,13 @@ from .helpers import prepare_frame
 
 
 class Inference:
-    def __init__(self):
-        cpu_extension = cpu_extension = r"C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\inference_engine\bin\intel64\Release\cpu_extension_avx2.dll"
-        self.plugin = IEPlugin(device='CPU')
-        self.face_detection = FaceDetection(r'extension\models\face-detection-retail-0005\FP16\face-detection-retail-0005.xml',
-                                            self.plugin, cpu_extension=cpu_extension)
-        self.emotion_recognition = EmotionRecognition(r'extension\models\emotions-recognition-retail-0003\FP16\emotions-recognition-retail-0003.xml',
-                                                      self.plugin, cpu_extension=cpu_extension)
+    def __init__(self, settings):
+        cpu_extension = settings.cpu_extension
+        self.plugin = IEPlugin(device=settings.device)
+        self.face_detection = FaceDetection(settings.face_detection_xml,
+                                            self.plugin, cpu_extension=cpu_extension, device=settings.device)
+        self.emotion_recognition = EmotionRecognition(settings.emotion_recognition_xml,
+                                                      self.plugin, cpu_extension=cpu_extension, device=settings.device)
 
 
 class Network:

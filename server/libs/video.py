@@ -4,13 +4,13 @@ from .helpers import draw_boxes, get_face_frames, get_boxes
 
 
 class VideoInput:
-    def __init__(self):
-        self._input_stream = 0  # './faces.mp4'
+    def __init__(self, settings):
+        self._input_stream = settings.input_stream
         self._video = cv.VideoCapture(self._input_stream)
-        self.flip_code = None
+        self.flip_code = settings.flip_code
 
-        self._video.set(cv.CAP_PROP_FRAME_WIDTH, 3000)
-        self._video.set(cv.CAP_PROP_FRAME_HEIGHT, 3000)
+        self._video.set(cv.CAP_PROP_FRAME_WIDTH, settings.frame_width)
+        self._video.set(cv.CAP_PROP_FRAME_HEIGHT, settings.frame_height)
 
         _, self.frame = self._video.read()
 

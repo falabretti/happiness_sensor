@@ -1,0 +1,8 @@
+[main]
+input_stream = 0
+cpu_extension = C:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\inference_engine\bin\intel64\Release\cpu_extension_avx2.dll
+face_detection_xml = extension/models/face-detection-retail-0005/FP16/face-detection-retail-0005.xml
+emotion_recognition_xml = extension/models/emotions-recognition-retail-0003/FP16/emotions-recognition-retail-0003.xml
+device = CPU
+flip_code = None
+resolution = 640x480
