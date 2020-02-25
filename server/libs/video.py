@@ -5,8 +5,9 @@ from .helpers import draw_boxes, get_face_frames, get_boxes
 
 class VideoInput:
     def __init__(self):
-        self._input_stream = 0 # './faces.mp4'
+        self._input_stream = 0  # './faces.mp4'
         self._video = cv.VideoCapture(self._input_stream)
+        self.flip_code = None
 
         self._video.set(cv.CAP_PROP_FRAME_WIDTH, 3000)
         self._video.set(cv.CAP_PROP_FRAME_HEIGHT, 3000)
@@ -26,10 +27,12 @@ class VideoInput:
         if (len(faces) > 0):
             self.frame = draw_boxes(next_frame, boxes, emotions)
 
-
         aux_frame = self.frame.copy()
         self.frame = next_frame
-        
+
         stats.update(boxes, emotions)
+
+        if self.flip_code is not None:
+            aux_frame = cv.flip(aux_frame, self.flip_code)
 
         return aux_frame
