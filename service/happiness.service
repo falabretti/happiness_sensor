@@ -1,0 +1,15 @@
+[Unit]
+Description=Happiness Sensor
+After=network.target
+
+[Service]
+Type=idle
+WorkingDirectory=<HAPPINESS_HOME>/service/
+ExecStart=/bin/bash happiness.sh
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=<USER>
+
+[Install]
+WantedBy=multi-user.target
